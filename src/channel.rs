@@ -24,6 +24,12 @@ impl AsFd for Channel {
     }
 }
 
+impl AsRawFd for Channel {
+    fn as_raw_fd(&self) -> std::os::unix::io::RawFd {
+        self.0.as_raw_fd()
+    }
+}
+
 impl Channel {
     /// Create a new communication channel to the kernel driver by mounting the
     /// given path. The kernel driver will delegate filesystem operations of
@@ -60,6 +66,18 @@ impl Channel {
 
 #[derive(Clone, Debug)]
 pub struct ChannelSender(Arc<File>);
+
+impl AsRawFd for ChannelSender {
+    fn as_raw_fd(&self) -> std::os::unix::io::RawFd {
+        self.0.as_raw_fd()
+    }
+}
+
+impl AsFd for ChannelSender {
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        self.0.as_fd()
+    }
+}
 
 impl ReplySender for ChannelSender {
     fn send(&self, bufs: &[io::IoSlice<'_>]) -> io::Result<()> {

@@ -52,6 +52,27 @@ pub use fuse_pure::Mount;
 pub use fuse2::Mount;
 #[cfg(fuser_mount_impl = "libfuse3")]
 pub use fuse3::Mount;
+
+/// Stub mount type when no mount implementation is available.
+/// This allows compilation on systems without FUSE support (e.g., macOS without macFUSE).
+/// All mount operations will return errors at runtime.
+#[cfg(fuser_mount_impl = "none")]
+#[derive(Debug)]
+pub struct Mount;
+
+#[cfg(fuser_mount_impl = "none")]
+impl Mount {
+    /// Stub: Always returns an error since no mount implementation is available.
+    pub fn new(
+        _mountpoint: &std::path::Path,
+        _options: &[mount_options::MountOption],
+    ) -> io::Result<(std::sync::Arc<std::fs::File>, Self)> {
+        Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "FUSE mounting not supported: no mount implementation available (macFUSE not installed?)",
+        ))
+    }
+}
 use std::ffi::CStr;
 
 #[inline]

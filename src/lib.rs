@@ -57,6 +57,27 @@ mod reply;
 mod request;
 mod session;
 
+// Multi-threaded async FUSE support
+#[cfg(feature = "async-mt")]
+mod async_fs;
+#[cfg(feature = "async-mt")]
+mod async_session;
+#[cfg(feature = "async-mt")]
+mod owned_request;
+
+#[cfg(feature = "async-mt")]
+pub use async_fs::AsyncFilesystem;
+#[cfg(feature = "async-mt")]
+pub use async_session::{AsyncSession, SharedSessionState, mount_async};
+#[cfg(feature = "async-mt")]
+pub use owned_request::{FuseReader, OwnedRequest};
+
+// io_uring FUSE support (Linux 6.14+)
+#[cfg(all(target_os = "linux", feature = "io-uring"))]
+mod uring_session;
+#[cfg(all(target_os = "linux", feature = "io-uring"))]
+pub use uring_session::{UringSession, mount_uring};
+
 /// We generally support async reads
 #[cfg(not(target_os = "macos"))]
 const INIT_FLAGS: u64 = FUSE_ASYNC_READ | FUSE_BIG_WRITES;
