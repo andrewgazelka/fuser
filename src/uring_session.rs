@@ -306,7 +306,10 @@ impl RingQueue {
             .user_data(entry_idx as u64);
 
         unsafe {
-            self.ring.submission().push(&sqe)?;
+            self.ring
+                .submission()
+                .push(&sqe)
+                .map_err(|_| io::Error::from_raw_os_error(libc::EBUSY))?;
         }
 
         Ok(())
@@ -334,7 +337,10 @@ impl RingQueue {
             .user_data(entry_idx as u64);
 
         unsafe {
-            self.ring.submission().push(&sqe)?;
+            self.ring
+                .submission()
+                .push(&sqe)
+                .map_err(|_| io::Error::from_raw_os_error(libc::EBUSY))?;
         }
 
         Ok(())
@@ -363,7 +369,7 @@ impl RingQueue {
 
     /// Check if there are pending CQEs without blocking.
     #[inline(always)]
-    pub fn has_completions(&self) -> bool {
+    pub fn has_completions(&mut self) -> bool {
         !self.ring.completion().is_empty()
     }
 
@@ -586,7 +592,11 @@ impl<FS: Filesystem + Send + Sync> Drop for UringSession<FS> {
         self.state.shutdown.store(true, Ordering::SeqCst);
 
         if !self.state.destroyed.swap(true, Ordering::SeqCst) {
-            self.filesystem.destroy();
+            // Try to get mutable access to filesystem for destroy()
+            // This will succeed if we're the only Arc holder (after threads finish)
+            if let Some(fs) = Arc::get_mut(&mut self.filesystem) {
+                fs.destroy();
+            }
         }
 
         if let Some((mountpoint, _mount)) = self.mount.take() {

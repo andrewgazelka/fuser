@@ -28,7 +28,7 @@ nix = { version = "0.29.0", features = ["fs", "user"] }
 
 # io_uring support (Linux 6.14+)
 [target.'cfg(target_os = "linux")'.dependencies]
-io-uring = { version = "0.7", optional = true }
+io-uring = { path = "../io-uring", optional = true }
 
 [dev-dependencies]
 env_logger = "0.11.7"
@@ -87,4 +87,8 @@ name = "ioctl"
 [[example]]
 name = "passthrough"
 required-features = ["abi-7-40"]
+
+[[example]]
+name = "uring_hello"
+required-features = ["io-uring"]
 

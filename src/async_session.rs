@@ -4,7 +4,7 @@
 //! to achieve high IOPS, with each request dispatched as an async tokio task.
 
 use std::io;
-use std::os::fd::{AsRawFd, OwnedFd};
+use std::os::fd::{AsRawFd, FromRawFd, OwnedFd};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
