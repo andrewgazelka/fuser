@@ -274,7 +274,9 @@ impl BackgroundSession {
             sender: _,
             _mount,
         } = self;
-        drop(_mount);
+        // _mount is dropped here implicitly - explicit drop() was unnecessary
+        // since Option<Mount> doesn't implement Drop, the call only extended lifetimes
+        let _ = _mount;
         guard.join().unwrap().unwrap();
     }
 
