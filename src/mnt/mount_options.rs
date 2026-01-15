@@ -127,6 +127,7 @@ fn conflicts_with(option: &MountOption) -> Vec<MountOption> {
 }
 
 // Format option to be passed to libfuse or kernel
+#[allow(dead_code)]
 pub fn option_to_string(option: &MountOption) -> String {
     match option {
         MountOption::FSName(name) => format!("fsname={name}"),

@@ -76,6 +76,7 @@ impl Mount {
 use std::ffi::CStr;
 
 #[inline]
+#[allow(dead_code)]
 fn libc_umount(mnt: &CStr) -> io::Result<()> {
     #[cfg(any(
         target_os = "macos",

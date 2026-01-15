@@ -20,6 +20,7 @@
 
 #![warn(missing_debug_implementations)]
 #![allow(missing_docs)]
+#![allow(dead_code)]
 
 use crate::consts::{FATTR_ATIME_NOW, FATTR_MTIME_NOW};
 use std::convert::TryFrom;
